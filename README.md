@@ -1,4 +1,4 @@
-# Crawler-Test-Task
+# Crawler
 A simple task with Scrapy Python library to parse hh.ru resumes.
 
 
