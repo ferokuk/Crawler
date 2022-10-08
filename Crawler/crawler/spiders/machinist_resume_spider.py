@@ -1,7 +1,7 @@
 import scrapy
 
 
-class MachinistResumeSpiderSpider(scrapy.Spider):
+class MachinistResumeSpider(scrapy.Spider):
     name = 'machinist_resume_spider'
     allowed_domains = ['hh.ru']
     start_urls = ['http://hh.ru/']

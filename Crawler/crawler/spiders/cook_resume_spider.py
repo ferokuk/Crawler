@@ -1,36 +1,35 @@
 import scrapy
 
-
-class ResumeSpiderSpider(scrapy.Spider):
-    name = 'cook_resume_spider'
+class CooksSpider(scrapy.Spider):
+    name = 'cooks_spider'
     allowed_domains = ['hh.ru']
     start_urls = ['http://hh.ru/']
-    pages_count = 250
-
+    pages_count = 15
+    id = -1
     def start_requests(self):
-        for i in range(0, self.pages_count):
-            url_cook = f"https://hh.ru/search/resume?area=113&relocation=living_or_relocation&gender=unknown&text=%D0%BF%D0%BE%D0%B2%D0%B0%D1%80&isDefaultArea=true&exp_period=all_time&logic=normal&pos=full_text&search_period=0&page={i}&hhtmFrom=resume_search_result"
+        for i in range(10, self.pages_count ):
+            url_cook = f"https://hh.ru/search/vacancy?search_field=name&search_field=company_name&search_field=description&text=%D0%BF%D0%BE%D0%B2%D0%B0%D1%80&page={i}&hhtmFrom=vacancy_search_list"
             yield scrapy.Request(url_cook, callback=self.parse_pages)
         
     def parse_pages(self, response):
         for link in response.css("a.serp-item__title::attr(href)").extract():
             url = response.urljoin(link)
-            yield scrapy.Request(url, callback=self.parse)
+            yield scrapy.Request(url,callback=self.parse)
 
     def parse(self, response):
-        position = response.css("span.resume-block__title-text::text").get()
+        position = response.css("h1.bloko-header-section-1::text").get().replace(",","")
 
-        if "Шеф" in position: 
-            return
-        if "шеф" in position: 
-            return
         if "повар" not in position.lower():
             return
-
-        specs = response.css("li.resume-block__specialization::text").get()
-        resume = {
+            
+        info = "".join(response.css("p::text").getall()[:-17:])
+        info += "".join(str(i+1)+ ") "+ n+"\n" for i,n in enumerate(response.css("li::text").getall()) if n != "Уведомления в мессенджер") + "\n"
+        self.id += 1
+        yield {
+            "ID": self.id,
             "Position": position,
-            "Specializations": specs,
+            "Specializations": info.replace(","," "),
             "Link": response.request.url
         }
-        yield resume
+    
+        
