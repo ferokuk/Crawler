@@ -18,7 +18,13 @@ USER_AGENT = 'crawler (+http://www.hh.ru)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
-
+PROXY_POOL_ENABLED = True
+DOWNLOADER_MIDDLEWARES = {
+    # ...
+    'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
+    'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
+    # ...
+}
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
